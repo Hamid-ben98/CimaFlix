@@ -14,10 +14,11 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, PaginationTrait;
 
-        public function get_movies(){
+    public function get_movies(){
 
         require_once('../vendor/autoload.php');
 
+		$key_api = env('key_api', false);
         $client = new \GuzzleHttp\Client();
         $results=array();
         $movies = array();
@@ -25,7 +26,7 @@ class Controller extends BaseController
             
              $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/popular?language=en-US&include_adult=false&page='.$i, [
                  'headers' => [
-                 'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzEzYzNkYTg1YWE5ZWJlMjZlMjIxYmYzYjYwNTRjNSIsInN1YiI6IjY1YjU3M2FmMmZhZjRkMDE3Y2RjOTYxMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aBXZQy4dKMj70Et7D6bLpOkcu4T38JS72TyE-1Ez0yQ',
+                 'Authorization' => 'Bearer '.$key_api,
                  'accept' => 'application/json',
                  ],
               ]);
@@ -43,6 +44,7 @@ class Controller extends BaseController
     public function get_series(){
         require_once('../vendor/autoload.php');
 
+		$key_api = env('key_api', false);
         $client = new \GuzzleHttp\Client();
         $results=array();
         $series = array();
@@ -50,7 +52,7 @@ class Controller extends BaseController
             
              $response = $client->request('GET', 'https://api.themoviedb.org/3/tv/popular?language=en-US&include_adult=false&page='.$i, [
                  'headers' => [
-                 'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzEzYzNkYTg1YWE5ZWJlMjZlMjIxYmYzYjYwNTRjNSIsInN1YiI6IjY1YjU3M2FmMmZhZjRkMDE3Y2RjOTYxMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aBXZQy4dKMj70Et7D6bLpOkcu4T38JS72TyE-1Ez0yQ',
+                 'Authorization' => 'Bearer '.$key_api,
                  'accept' => 'application/json',
                  ],
               ]);
@@ -69,13 +71,14 @@ class Controller extends BaseController
     public function get_top_movies(){
 
         require_once('../vendor/autoload.php');
-
+		
+		$key_api = env('key_api', false);
         $client = new \GuzzleHttp\Client();
         $results=array();
 
         $response = $client->request('GET', 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&include_adult=false&page=1', [
           'headers' => [
-            'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzEzYzNkYTg1YWE5ZWJlMjZlMjIxYmYzYjYwNTRjNSIsInN1YiI6IjY1YjU3M2FmMmZhZjRkMDE3Y2RjOTYxMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aBXZQy4dKMj70Et7D6bLpOkcu4T38JS72TyE-1Ez0yQ',
+            'Authorization' => 'Bearer '.$key_api,
             'accept' => 'application/json',
           ],
         ]);
@@ -86,18 +89,19 @@ class Controller extends BaseController
         while($cnt<5){
                 array_push($top_movies,$results[$cnt]);
                 $cnt++;
-         }
-         return $top_movies;
+        }
+        return $top_movies;
     }
 
     public function get_top_series(){
 
+		$key_api = env('key_api', false);
         $client = new \GuzzleHttp\Client();
         $results=array();
 
         $response = $client->request('GET', 'https://api.themoviedb.org/3/tv/top_rated?language=en-US&include_adult=false&page=1', [
           'headers' => [
-            'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzEzYzNkYTg1YWE5ZWJlMjZlMjIxYmYzYjYwNTRjNSIsInN1YiI6IjY1YjU3M2FmMmZhZjRkMDE3Y2RjOTYxMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aBXZQy4dKMj70Et7D6bLpOkcu4T38JS72TyE-1Ez0yQ',
+            'Authorization' => 'Bearer '.$key_api,
             'accept' => 'application/json',
           ],
         ]);
@@ -124,16 +128,17 @@ class Controller extends BaseController
 
     public function series (){
 
-    $series = Controller::get_series();
-    $top_series = Controller::get_top_series();
+		$series = Controller::get_series();
+		$top_series = Controller::get_top_series();
 
-    return view('series',["series"=>$this->paginate($series),
+		return view('series',["series"=>$this->paginate($series),
                             "top_series"=>$top_series]);
     }
 
     public function watch($id,$type){
         require_once('../vendor/autoload.php');
 
+		$key_api = env('key_api', false);
         $client = new \GuzzleHttp\Client();
         $results=array();
         if($type=='movie'){
@@ -144,7 +149,7 @@ class Controller extends BaseController
 
         $response = $client->request('GET', $url_api, [
           'headers' => [
-            'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmYzEzYzNkYTg1YWE5ZWJlMjZlMjIxYmYzYjYwNTRjNSIsInN1YiI6IjY1YjU3M2FmMmZhZjRkMDE3Y2RjOTYxMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aBXZQy4dKMj70Et7D6bLpOkcu4T38JS72TyE-1Ez0yQ',
+            'Authorization' => 'Bearer '.$key_api,
             'accept' => 'application/json',
           ],
         ]);
